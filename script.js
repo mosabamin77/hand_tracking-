@@ -1,50 +1,42 @@
 import {
-    HandLandmarker,
-    FilesetResolver
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm";
+    FilesetResolver,
+    HandLandmarker
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/vision_bundle.mjs";
 
 
 const video = document.getElementById("video");
-
 const canvas = document.getElementById("canvas");
-
 const ctx = canvas.getContext("2d");
 
 const startButton = document.getElementById("startButton");
-
 const gestureText = document.getElementById("gesture");
 
 const reactionImage = document.getElementById("reactionImage");
-
 const reactionText = document.getElementById("reactionText");
 
-
-let handLandmarker;
-
+let handLandmarker = null;
 let running = false;
 
 
 /* ==========================================
-   CREATE MEDIAPIPE
+   CREATE MEDIAPIPE HAND LANDMARKER
 ========================================== */
 
 async function createHandLandmarker() {
 
-    const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
-    );
+    gestureText.textContent = "Loading MediaPipe...";
 
+    const vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm"
+    );
 
     handLandmarker =
         await HandLandmarker.createFromOptions(
             vision,
             {
-
                 baseOptions: {
-
                     modelAssetPath:
                         "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
-
                 },
 
                 runningMode: "VIDEO",
@@ -56,9 +48,9 @@ async function createHandLandmarker() {
                 minHandPresenceConfidence: 0.5,
 
                 minTrackingConfidence: 0.5
-
             }
         );
+
 }
 
 
@@ -68,48 +60,68 @@ async function createHandLandmarker() {
 
 async function startCamera() {
 
-    if (!handLandmarker) {
+    try {
+
+        startButton.disabled = true;
+
+        startButton.textContent = "Loading...";
 
         await createHandLandmarker();
 
-    }
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: 640,
+                    height: 480
+                },
+                audio: false
+            });
 
 
-    const stream =
-        await navigator.mediaDevices.getUserMedia({
+        video.srcObject = stream;
 
-            video: {
+        running = true;
 
-                width: 640,
+        startButton.textContent = "Camera Running";
 
-                height: 480
+        gestureText.textContent = "No gesture";
+
+
+        video.addEventListener(
+            "loadeddata",
+            () => {
+
+                predict();
 
             },
-
-            audio: false
-
-        });
+            { once: true }
+        );
 
 
-    video.srcObject = stream;
+    } catch (error) {
 
-    running = true;
+        console.error(error);
 
-    startButton.textContent = "Camera Running";
+        gestureText.textContent =
+            "Camera error";
 
-    startButton.disabled = true;
+        startButton.disabled = false;
 
+        startButton.textContent =
+            "Start Camera";
 
-    video.addEventListener(
-        "loadeddata",
-        predict
-    );
+        alert(
+            "Could not start the camera. Check the browser permissions and Console."
+        );
+
+    }
 
 }
 
 
 /* ==========================================
-   CHECK FINGER
+   FINGER IS UP
 ========================================== */
 
 function fingerIsUp(
@@ -131,66 +143,21 @@ function countFingers(hand) {
 
     let fingers = 0;
 
-
-    // Index
-
-    if (
-        fingerIsUp(
-            hand,
-            8,
-            6
-        )
-    ) {
-
+    if (fingerIsUp(hand, 8, 6)) {
         fingers++;
-
     }
 
-
-    // Middle
-
-    if (
-        fingerIsUp(
-            hand,
-            12,
-            10
-        )
-    ) {
-
+    if (fingerIsUp(hand, 12, 10)) {
         fingers++;
-
     }
 
-
-    // Ring
-
-    if (
-        fingerIsUp(
-            hand,
-            16,
-            14
-        )
-    ) {
-
+    if (fingerIsUp(hand, 16, 14)) {
         fingers++;
-
     }
 
-
-    // Pinky
-
-    if (
-        fingerIsUp(
-            hand,
-            20,
-            18
-        )
-    ) {
-
+    if (fingerIsUp(hand, 20, 18)) {
         fingers++;
-
     }
-
 
     return fingers;
 
@@ -204,47 +171,23 @@ function countFingers(hand) {
 function isPeace(hand) {
 
     const indexUp =
-        fingerIsUp(
-            hand,
-            8,
-            6
-        );
-
+        fingerIsUp(hand, 8, 6);
 
     const middleUp =
-        fingerIsUp(
-            hand,
-            12,
-            10
-        );
-
+        fingerIsUp(hand, 12, 10);
 
     const ringDown =
-        !fingerIsUp(
-            hand,
-            16,
-            14
-        );
-
+        !fingerIsUp(hand, 16, 14);
 
     const pinkyDown =
-        !fingerIsUp(
-            hand,
-            20,
-            18
-        );
+        !fingerIsUp(hand, 20, 18);
 
 
     return (
-
         indexUp &&
-
         middleUp &&
-
         ringDown &&
-
         pinkyDown
-
     );
 
 }
@@ -257,47 +200,23 @@ function isPeace(hand) {
 function isShutUp(hand) {
 
     const indexUp =
-        fingerIsUp(
-            hand,
-            8,
-            6
-        );
-
+        fingerIsUp(hand, 8, 6);
 
     const middleDown =
-        !fingerIsUp(
-            hand,
-            12,
-            10
-        );
-
+        !fingerIsUp(hand, 12, 10);
 
     const ringDown =
-        !fingerIsUp(
-            hand,
-            16,
-            14
-        );
-
+        !fingerIsUp(hand, 16, 14);
 
     const pinkyDown =
-        !fingerIsUp(
-            hand,
-            20,
-            18
-        );
+        !fingerIsUp(hand, 20, 18);
 
 
     return (
-
         indexUp &&
-
         middleDown &&
-
         ringDown &&
-
         pinkyDown
-
     );
 
 }
@@ -315,24 +234,20 @@ function showReaction(
     gestureText.textContent =
         gesture;
 
+    reactionImage.src =
+        image;
 
-    if (image) {
+    reactionImage.style.display =
+        "block";
 
-        reactionImage.src = image;
-
-        reactionImage.style.display =
-            "block";
-
-        reactionText.style.display =
-            "none";
-
-    }
+    reactionText.style.display =
+        "none";
 
 }
 
 
 /* ==========================================
-   NO REACTION
+   CLEAR REACTION
 ========================================== */
 
 function clearReaction() {
@@ -340,14 +255,11 @@ function clearReaction() {
     gestureText.textContent =
         "No gesture";
 
-
     reactionImage.style.display =
         "none";
 
-
     reactionText.style.display =
         "block";
-
 
     reactionText.textContent =
         "Make a gesture";
@@ -395,11 +307,9 @@ function drawHand(hand) {
     ];
 
 
-    ctx.fillStyle =
-        "lime";
+    ctx.fillStyle = "lime";
 
-    ctx.strokeStyle =
-        "lime";
+    ctx.strokeStyle = "lime";
 
     ctx.lineWidth = 2;
 
@@ -407,12 +317,10 @@ function drawHand(hand) {
     for (const landmark of hand) {
 
         const x =
-            landmark.x *
-            canvas.width;
+            landmark.x * canvas.width;
 
         const y =
-            landmark.y *
-            canvas.height;
+            landmark.y * canvas.height;
 
 
         ctx.beginPath();
@@ -430,40 +338,26 @@ function drawHand(hand) {
     }
 
 
-    for (
-        const [start, end]
-        of connections
-    ) {
+    for (const [start, end] of connections) {
 
         const x1 =
-            hand[start].x *
-            canvas.width;
+            hand[start].x * canvas.width;
 
         const y1 =
-            hand[start].y *
-            canvas.height;
-
+            hand[start].y * canvas.height;
 
         const x2 =
-            hand[end].x *
-            canvas.width;
+            hand[end].x * canvas.width;
 
         const y2 =
-            hand[end].y *
-            canvas.height;
+            hand[end].y * canvas.height;
 
 
         ctx.beginPath();
 
-        ctx.moveTo(
-            x1,
-            y1
-        );
+        ctx.moveTo(x1, y1);
 
-        ctx.lineTo(
-            x2,
-            y2
-        );
+        ctx.lineTo(x2, y2);
 
         ctx.stroke();
 
@@ -473,12 +367,19 @@ function drawHand(hand) {
 
 
 /* ==========================================
-   DETECT
+   DETECT HANDS
 ========================================== */
 
-async function predict() {
+function predict() {
 
     if (!running) {
+        return;
+    }
+
+
+    if (video.readyState < 2) {
+
+        requestAnimationFrame(predict);
 
         return;
 
@@ -516,7 +417,7 @@ async function predict() {
     ) {
 
 
-        // Draw hands
+        /* DRAW HANDS */
 
         for (
             const hand
@@ -533,18 +434,15 @@ async function predict() {
 
 
         /* ==================================
-           TWO HANDS
+           TWO HANDS UP
         ================================== */
 
-        if (
-            numberOfHands === 2
-        ) {
+        if (numberOfHands === 2) {
 
             const fingers1 =
                 countFingers(
                     results.landmarks[0]
                 );
-
 
             const fingers2 =
                 countFingers(
@@ -571,17 +469,13 @@ async function predict() {
            ONE HAND
         ================================== */
 
-        else if (
-            numberOfHands === 1
-        ) {
+        else if (numberOfHands === 1) {
 
             const hand =
                 results.landmarks[0];
 
 
-            if (
-                isPeace(hand)
-            ) {
+            if (isPeace(hand)) {
 
                 showReaction(
                     "PEACE",
@@ -590,10 +484,7 @@ async function predict() {
 
             }
 
-
-            else if (
-                isShutUp(hand)
-            ) {
+            else if (isShutUp(hand)) {
 
                 showReaction(
                     "SHH!",
@@ -607,9 +498,7 @@ async function predict() {
     }
 
 
-    requestAnimationFrame(
-        predict
-    );
+    requestAnimationFrame(predict);
 
 }
 

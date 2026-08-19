@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Hand Gesture Controller</title>
@@ -21,34 +20,23 @@
             Make a hand gesture and see the reaction!
         </p>
 
-
         <div class="status">
-
-            <span id="gesture">
-                No gesture
-            </span>
-
+            <span id="gesture">No gesture</span>
         </div>
 
-
         <div class="main">
-
-            <!-- CAMERA -->
 
             <div class="camera-container">
 
                 <video
                     id="video"
                     autoplay
-                    playsinline
-                ></video>
+                    playsinline>
+                </video>
 
                 <canvas id="canvas"></canvas>
 
             </div>
-
-
-            <!-- REACTION -->
 
             <div class="reaction-container">
 
@@ -59,8 +47,7 @@
                     <img
                         id="reactionImage"
                         src=""
-                        alt="Reaction"
-                    >
+                        alt="Reaction">
 
                     <p id="reactionText">
                         Make a gesture
@@ -72,11 +59,9 @@
 
         </div>
 
-
         <button id="startButton">
             Start Camera
         </button>
-
 
         <div class="instructions">
 
@@ -105,10 +90,9 @@
 
     </div>
 
-
-    <!-- MediaPipe -->
-
     <script type="module" src="script.js"></script>
+
+<script src="script.js"></script>
 
 </body>
 

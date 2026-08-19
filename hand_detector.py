@@ -50,6 +50,9 @@ if peace_image is None:
 if two_hands_image is None:
     print("ERROR: Could not find hands up.jpg")
 
+if shut_up_image is None:
+    print("ERROR: Could not find shut up.jpg")
+
 
 # ==========================================
 # FUNCTION: CHECK IF FINGER IS UP
