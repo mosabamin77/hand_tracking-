@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hand Gesture Controller</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Hand Gesture Controller</h1>
+
+        <p class="subtitle">
+            Make a hand gesture and see the reaction!
+        </p>
+
+
+        <div class="status">
+
+            <span id="gesture">
+                No gesture
+            </span>
+
+        </div>
+
+
+        <div class="main">
+
+            <!-- CAMERA -->
+
+            <div class="camera-container">
+
+                <video
+                    id="video"
+                    autoplay
+                    playsinline
+                ></video>
+
+                <canvas id="canvas"></canvas>
+
+            </div>
+
+
+            <!-- REACTION -->
+
+            <div class="reaction-container">
+
+                <h2>Reaction</h2>
+
+                <div class="reaction">
+
+                    <img
+                        id="reactionImage"
+                        src=""
+                        alt="Reaction"
+                    >
+
+                    <p id="reactionText">
+                        Make a gesture
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button id="startButton">
+            Start Camera
+        </button>
+
+
+        <div class="instructions">
+
+            <h2>Try these gestures</h2>
+
+            <div class="gestures">
+
+                <div>
+                    ✌️
+                    <span>Peace</span>
+                </div>
+
+                <div>
+                    🙌
+                    <span>Hands Up</span>
+                </div>
+
+                <div>
+                    ☝️
+                    <span>Shh!</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MediaPipe -->
+
+    <script type="module" src="script.js"></script>
+
+</body>
+
+</html>
